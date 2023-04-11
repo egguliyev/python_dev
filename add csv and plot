@@ -1,0 +1,15 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.io import loadmat
+
+def normalize(input_data):
+    return input_data / np.max(input_data)
+
+data = pd.read_csv("spectrum.csv", low_memory=False, header=0, usecols=[0, 1])
+x,y = data.T
+ 
+fig, ax = plt.subplots()
+ax.plot(x, normalize(y), 'r-')
+ax.legend()
+plt.show()
