@@ -1,0 +1,41 @@
+import numpy as np
+from scipy import io as sio
+import matplotlib.pyplot as plt
+ 
+
+
+def shift(arr, c):
+    return np.array(arr) + c
+
+
+def load_mat_data(mat_file):
+    mat_data = sio.loadmat(mat_file, struct_as_record=False, squeeze_me=True)
+    cc_struct = mat_data['cc_struct']
+    raw_data = cc_struct.data.cc_data
+    return raw_data, cc_struct
+
+
+def get_file_contents(raw_data, threshold, row, col):
+    indices = [(threshold - 4 + i, i, row, col) for i in range(5)]
+    return sum(raw_data[idx] for idx in indices)
+
+
+def main():
+    raw_data, cc_struct = load_mat_data("mdata.mat")
+    x_data = np.array([threshold for threshold in range(np.size(raw_data, 0) - 4)])
+    fig, axs = plt.subplots(24, 36, figsize=(36, 24))
+
+    for row in range(24):
+        for col in range(36):
+            ax = axs[row, col]
+            ax.plot(shift(x_data, cc_struct.params.startThresh),
+                    np.array([get_file_contents(raw_data, threshold, row, col) for threshold in range((np.size(raw_data, 0) - 4))]))
+            ax.set_xticks([])
+            ax.set_yticks([])
+
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()
